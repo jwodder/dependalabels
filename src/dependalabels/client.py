@@ -62,18 +62,19 @@ class LabelMaker:
             f"/{self.client.repo.name}/labels"
         )
 
-    def ensure_label(self, name: str, details: LabelDetails | None) -> None:
-        payload: dict[str, str] = {}
+    def ensure_label(
+        self, name: str, details: LabelDetails, force: bool = False
+    ) -> None:
+        payload: dict[str, str | None] = {}
         try:
             extant = self.labels[name]
         except KeyError:
             log.info("Creating %r label", name)
             payload = {
                 "name": name,
+                "color": details.color,
+                "description": details.description,
             }
-            if details is not None:
-                payload["color"] = details.color
-                payload["description"] = details.description
             r = self.client.session.post(self.label_url, json=payload)
             r.raise_for_status()
             data = r.json()
@@ -81,11 +82,11 @@ class LabelMaker:
                 color=data["color"], description=data["description"]
             )
         else:
-            if details is not None:
+            if force:
                 if details.color != extant.color:
                     payload["color"] = details.color
                     extant.color = details.color
-                if details.description != extant.description:
+                if (details.description or "") != (extant.description or ""):
                     payload["description"] = details.description
                     extant.description = details.description
             if payload:

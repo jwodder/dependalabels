@@ -8,7 +8,7 @@ from ghrepo import get_local_repo
 from pydantic import BaseModel, Field
 from ruamel.yaml import YAML
 from .client import Client
-from .labels import PREDEFINED
+from .labels import PREDEFINED, LabelDetails
 
 log = logging.getLogger()
 
@@ -53,12 +53,13 @@ def get_github_token() -> str:
 
 
 @click.command()
+@click.option("-f", "--force", is_flag=True)
 @click.argument(
     "dirpath",
     type=click.Path(file_okay=False, exists=True, path_type=Path),
     required=False,
 )
-def main(dirpath: Path | None) -> None:
+def main(dirpath: Path | None, force: bool) -> None:
     logging.basicConfig(
         format="[%(levelname)-8s] %(message)s",
         level=logging.INFO,
@@ -70,8 +71,13 @@ def main(dirpath: Path | None) -> None:
     with Client(repo=get_local_repo(dirpath), token=get_github_token()) as client:
         labeler = client.get_label_maker()
         for name in label_names:
-            details = PREDEFINED.get(name)
-            labeler.ensure_label(name, details)
+            try:
+                details = PREDEFINED[name]
+                force_this = force
+            except KeyError:
+                details = LabelDetails.random()
+                force_this = False
+            labeler.ensure_label(name, details, force=force_this)
 
 
 if __name__ == "__main__":
