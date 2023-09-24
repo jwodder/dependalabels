@@ -69,7 +69,15 @@ class LabelMaker:
         try:
             extant = self.labels[name]
         except KeyError:
-            log.info("Creating %r label", name)
+            if details.predefined:
+                log.info(
+                    "Creating label %r (color: %s, description: %r)",
+                    name,
+                    details.color,
+                    details.description,
+                )
+            else:
+                log.info("Creating label %r (random color: %s)", name, details.color)
             payload = {
                 "name": name,
                 "color": details.color,
@@ -90,9 +98,11 @@ class LabelMaker:
                     payload["description"] = details.description
                     extant.description = details.description
             if payload:
-                log.info("Updating %s for %r label", ", ".join(payload.keys()), name)
+                log.info("Updating %s for label %r", ", ".join(payload.keys()), name)
                 self.client.session.patch(
                     f"{self.label_url}/{name}", json=payload
                 ).raise_for_status()
+            elif details.predefined:
+                log.info("Label %r already exists; not modifying", name)
             else:
-                log.info("%r label already exists; not modifying", name)
+                log.info("Label %r already exists", name)

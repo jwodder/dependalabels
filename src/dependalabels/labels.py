@@ -29,6 +29,7 @@ COLORS = [
 class LabelDetails:
     color: str
     description: str | None
+    predefined: bool = False
 
     @classmethod
     def random(cls) -> LabelDetails:
@@ -39,17 +40,21 @@ PREDEFINED = {
     "dependencies": LabelDetails(
         color="8732bc",
         description="Update one or more dependencies' versions",
+        predefined=True,
     ),
     "d:cargo": LabelDetails(
         color="dea584",
         description="Update a Cargo (Rust) dependency",
+        predefined=True,
     ),
     "d:github-actions": LabelDetails(
         color="74fa75",
         description="Update a GitHub Actions action dependency",
+        predefined=True,
     ),
     "d:python": LabelDetails(
         color="3572a5",
         description="Update a Python dependency",
+        predefined=True,
     ),
 }
