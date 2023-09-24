@@ -48,4 +48,8 @@ PREDEFINED = {
         color="74fa75",
         description="Update a GitHub Actions action dependency",
     ),
+    "d:python": LabelDetails(
+        color="3572a5",
+        description="Update a Python dependency",
+    ),
 }
