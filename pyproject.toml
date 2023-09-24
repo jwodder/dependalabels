@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "dependalabels"
 dynamic = ["version"]
 description = "Create GitHub PR labels used by Dependabot config"
-#readme = "README.rst"
+readme = "README.rst"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = { paths = ["LICENSE"] }
