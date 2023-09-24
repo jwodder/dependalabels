@@ -32,5 +32,18 @@ dependalabels = "dependalabels:main"
 "Source Code" = "https://github.com/jwodder/dependalabels"
 "Bug Tracker" = "https://github.com/jwodder/dependalabels/issues"
 
+[tool.hatch.build]
+only-include = ["dependalabels.py"]
+
+#[tool.hatch.build.targets.sdist]
+#include = [
+#    "/src",
+#    "/test",
+#    "CHANGELOG.*",
+#    "CONTRIBUTORS.*",
+#    "mypy.ini",
+#    "tox.ini",
+#]
+
 [tool.hatch.envs.default]
 python = "3"
