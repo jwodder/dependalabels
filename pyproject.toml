@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "dependalabels"
+version = "0.1.0.dev"
+description = "Create GitHub PR labels used by Dependabot config"
+#readme = "README.rst"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = { paths = ["LICENSE"] }
+authors = [
+    { name = "John Thorvald Wodder II", email = "dependalabels@varonathe.org" }
+]
+
+#keywords = []
+#classifiers = []
+
+dependencies = [
+    "click >= 8.0",
+    "ghrepo ~= 0.7",
+    "pydantic ~= 2.0",
+    "PyGithub ~= 1.53",
+    "ruamel.yaml >=0.15, <1",
+]
+
+[project.scripts]
+dependalabels = "dependalabels:main"
+
+[project.urls]
+"Source Code" = "https://github.com/jwodder/dependalabels"
+"Bug Tracker" = "https://github.com/jwodder/dependalabels/issues"
+
+[tool.hatch.envs.default]
+python = "3"
