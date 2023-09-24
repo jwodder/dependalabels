@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "dependalabels"
-version = "0.1.0.dev"
+dynamic = ["version"]
 description = "Create GitHub PR labels used by Dependabot config"
 #readme = "README.rst"
 requires-python = ">=3.10"
@@ -34,6 +34,9 @@ dependalabels = "dependalabels:main"
 
 [tool.hatch.build]
 only-include = ["dependalabels.py"]
+
+[tool.hatch.version]
+path = "dependalabels.py"
 
 #[tool.hatch.build.targets.sdist]
 #include = [

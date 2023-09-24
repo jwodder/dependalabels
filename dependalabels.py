@@ -1,3 +1,9 @@
+"""
+Create GitHub PR labels used by Dependabot config
+
+Visit <https://github.com/jwodder/dependalabels> for more information.
+"""
+
 from __future__ import annotations
 from dataclasses import dataclass
 import logging
@@ -11,6 +17,12 @@ from github import Github
 from github.Repository import Repository
 from pydantic import BaseModel, Field
 from ruamel.yaml import YAML
+
+__version__ = "0.1.0.dev"
+__author__ = "John T. Wodder II"
+__author_email__ = "dependalabels@varonathe.org"
+__license__ = "MIT"
+__url__ = "https://github.com/jwodder/dependalabels"
 
 log = logging.getLogger()
 
