@@ -7,6 +7,7 @@ import click
 from ghrepo import get_local_repo
 from pydantic import BaseModel, Field
 from ruamel.yaml import YAML
+from . import __version__
 from .client import Client
 from .labels import PREDEFINED, LabelDetails
 
@@ -53,13 +54,29 @@ def get_github_token() -> str:
 
 
 @click.command()
-@click.option("-f", "--force", is_flag=True)
+@click.version_option(
+    __version__,
+    "-V",
+    "--version",
+    message="%(prog)s %(version)s",
+)
+@click.option(
+    "-f",
+    "--force",
+    is_flag=True,
+    help="Ensure predefined labels have the same colors & descriptions as when created",
+)
 @click.argument(
     "dirpath",
     type=click.Path(file_okay=False, exists=True, path_type=Path),
     required=False,
 )
 def main(dirpath: Path | None, force: bool) -> None:
+    """
+    Create GitHub PR labels used by Dependabot config
+
+    Visit <https://github.com/jwodder/dependalabels> for more information.
+    """
     logging.basicConfig(
         format="[%(levelname)-8s] %(message)s",
         level=logging.INFO,
