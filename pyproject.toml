@@ -14,8 +14,24 @@ authors = [
     { name = "John Thorvald Wodder II", email = "dependalabels@varonathe.org" }
 ]
 
-#keywords = []
-#classifiers = []
+keywords = [
+    "dependabot",
+    "GitHub",
+    "GitHub labels",
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+    "License :: OSI Approved :: MIT License",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 
 dependencies = [
     "click >= 8.0",
