@@ -107,10 +107,10 @@ def main(dirpath: Optional[Path]) -> None:
     if not label_names:
         log.info("No Dependabot labels to configure")
         return
-    labels = []
+    labels = {}
     for lb in label_names:
         try:
-            labels.append(LABELS[lb])
+            labels[lb] = LABELS[lb]
         except KeyError:
             raise click.UsageError(f"Unknown label {lb!r}")
     gh = Github(get_github_token())
