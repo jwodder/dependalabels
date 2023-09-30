@@ -64,6 +64,7 @@ Authentication
 --------------
 
 ``dependalabels`` requires a GitHub access token with appropriate permissions
-in order to run.  Specify the token either via the ``GITHUB_TOKEN`` environment
-variable or as the value of the ``hub.oauthtoken`` Git config option in your
-``~/.gitconfig`` file.
+in order to run.  Specify the token via the ``GH_TOKEN`` or ``GITHUB_TOKEN``
+environment variable (possibly in an ``.env`` file), by storing a token with
+the ``gh`` or ``hub`` command, or by setting the ``hub.oauthtoken`` Git config
+option in your ``~/.gitconfig`` file.

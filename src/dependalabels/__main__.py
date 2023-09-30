@@ -1,10 +1,10 @@
 from __future__ import annotations
 import logging
-import os
 from pathlib import Path
 import subprocess
 import click
 from ghrepo import get_local_repo
+from ghtoken import GHTokenNotFound, get_ghtoken
 from pydantic import BaseModel, Field
 from ruamel.yaml import YAML
 from . import __version__
@@ -34,23 +34,6 @@ def get_custom_labels(dirpath: Path | None) -> set[str]:
     with (toplevel / ".github" / "dependabot.yml").open() as fp:
         cfg = DependabotConfig.model_validate(YAML(typ="safe").load(fp))
     return {lb for update in cfg.updates for lb in update.labels}
-
-
-def get_github_token() -> str:
-    token = os.environ.get("GITHUB_TOKEN")
-    if not token:
-        r = subprocess.run(
-            ["git", "config", "hub.oauthtoken"],
-            stdout=subprocess.PIPE,
-            text=True,
-        )
-        if r.returncode != 0 or not r.stdout.strip():
-            raise click.UsageError(
-                "GitHub OAuth token not set.  Set via GITHUB_TOKEN"
-                " environment variable or hub.oauthtoken Git config option."
-            )
-        token = r.stdout.strip()
-    return token
 
 
 @click.command()
@@ -85,7 +68,14 @@ def main(dirpath: Path | None, force: bool) -> None:
     if not label_names:
         log.info("No Dependabot labels to configure")
         return
-    with Client(repo=get_local_repo(dirpath), token=get_github_token()) as client:
+    try:
+        token = get_ghtoken()
+    except GHTokenNotFound:
+        raise click.UsageError(
+            "GitHub token not found.  Set via GH_TOKEN, GITHUB_TOKEN, gh, hub,"
+            " or hub.oauthtoken."
+        )
+    with Client(repo=get_local_repo(dirpath), token=token) as client:
         labeler = client.get_label_maker()
         for name in label_names:
             try:

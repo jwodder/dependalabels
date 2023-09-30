@@ -36,6 +36,7 @@ classifiers = [
 dependencies = [
     "click >= 8.0",
     "ghrepo ~= 0.7",
+    "ghtoken ~= 0.1",
     "pydantic ~= 2.0",
     "requests ~= 2.20",
     "ruamel.yaml >=0.15, <1",
