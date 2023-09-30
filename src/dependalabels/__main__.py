@@ -31,7 +31,7 @@ def get_custom_labels(dirpath: Path | None) -> set[str]:
         check=True,
     )
     toplevel = Path(r.stdout.strip())
-    with (toplevel / ".github" / "dependabot.yml").open() as fp:
+    with (toplevel / ".github" / "dependabot.yml").open(encoding="utf-8") as fp:
         cfg = DependabotConfig.model_validate(YAML(typ="safe").load(fp))
     return {lb for update in cfg.updates for lb in update.labels}
 
