@@ -58,7 +58,7 @@ include = [
     "/test",
     "CHANGELOG.*",
     "CONTRIBUTORS.*",
-    "mypy.ini",
+    "setup.cfg",
     "tox.ini",
 ]
 
