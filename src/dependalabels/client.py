@@ -20,7 +20,9 @@ class Client:
 
     def __post_init__(self, token: str) -> None:
         self.session = requests.Session()
+        self.session.headers["Accept"] = "application/vnd.github+json"
         self.session.headers["Authorization"] = f"bearer {token}"
+        self.session.headers["X-GitHub-Api-Version"] = "2022-11-28"
 
     def __enter__(self) -> Client:
         return self
