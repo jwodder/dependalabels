@@ -2,14 +2,24 @@ from __future__ import annotations
 from collections.abc import Iterator
 from dataclasses import InitVar, dataclass, field
 import logging
+import platform
 from typing import Any
 from ghrepo import GHRepo
 import requests
+from . import __url__, __version__
 from .labels import LabelDetails
 
 log = logging.getLogger(__name__)
 
 GITHUB_API_URL = "https://api.github.com"
+
+USER_AGENT = "dependalabels/{} ({}) requests/{} {}/{}".format(
+    __version__,
+    __url__,
+    requests.__version__,
+    platform.python_implementation(),
+    platform.python_version(),
+)
 
 
 @dataclass
@@ -22,6 +32,7 @@ class Client:
         self.session = requests.Session()
         self.session.headers["Accept"] = "application/vnd.github+json"
         self.session.headers["Authorization"] = f"bearer {token}"
+        self.session.headers["User-Agent"] = USER_AGENT
         self.session.headers["X-GitHub-Api-Version"] = "2022-11-28"
 
     def __enter__(self) -> Client:
