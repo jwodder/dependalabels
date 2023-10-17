@@ -36,7 +36,7 @@ def get_custom_labels(dirpath: Path | None) -> set[str]:
     return {lb for update in cfg.updates for lb in update.labels}
 
 
-@click.command()
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
 @click.version_option(
     __version__,
     "-V",
