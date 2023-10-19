@@ -39,7 +39,7 @@ class LabelDetails:
 PREDEFINED = {
     "dependencies": LabelDetails(
         color="8732bc",
-        description="Update one or more dependencies' versions",
+        description="Update one or more dependencies",
         predefined=True,
     ),
     "d:cargo": LabelDetails(
