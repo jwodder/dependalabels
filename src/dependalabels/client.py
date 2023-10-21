@@ -1,84 +1,41 @@
 from __future__ import annotations
-from collections.abc import Iterator
-from dataclasses import InitVar, dataclass, field
+from dataclasses import InitVar, dataclass
 import logging
-import platform
-from types import TracebackType
+from urllib.parse import quote
 from ghrepo import GHRepo
-import requests
+import ghreq
 from . import __url__, __version__
 from .labels import LabelDetails
 
 log = logging.getLogger(__name__)
 
-GITHUB_API_URL = "https://api.github.com"
-
-USER_AGENT = "dependalabels/{} ({}) requests/{} {}/{}".format(
-    __version__,
-    __url__,
-    requests.__version__,
-    platform.python_implementation(),
-    platform.python_version(),
-)
-
 
 @dataclass
-class Client:
+class Client(ghreq.Client):
     repo: GHRepo
     token: InitVar[str]
-    session: requests.Session = field(init=False)
 
     def __post_init__(self, token: str) -> None:
-        self.session = requests.Session()
-        self.session.headers["Accept"] = "application/vnd.github+json"
-        self.session.headers["Authorization"] = f"bearer {token}"
-        self.session.headers["User-Agent"] = USER_AGENT
-        self.session.headers["X-GitHub-Api-Version"] = "2022-11-28"
-
-    def __enter__(self) -> Client:
-        return self
-
-    def __exit__(
-        self,
-        _exc_type: type[BaseException] | None,
-        _exc_val: BaseException | None,
-        _exc_tb: TracebackType | None,
-    ) -> None:
-        self.session.close()
-
-    def paginate(self, url: str) -> Iterator:
-        while True:
-            r = self.session.get(url)
-            r.raise_for_status()
-            yield from r.json()
-            url2 = r.links.get("next", {}).get("url")
-            if url2 is None:
-                return
-            url = url2
+        super().__init__(
+            token=token,
+            user_agent=ghreq.make_user_agent("dependalabels", __version__, url=__url__),
+        )
 
     def get_label_maker(self) -> LabelMaker:
         log.info("Fetching current labels for %s ...", self.repo)
         labels: dict[str, LabelDetails] = {}
-        for lbl in self.paginate(
-            f"{GITHUB_API_URL}/repos/{self.repo.owner}/{self.repo.name}/labels"
-        ):
+        endpoint = self / "repos" / self.repo.owner / self.repo.name / "labels"
+        for lbl in endpoint.paginate():
             labels[lbl["name"]] = LabelDetails(
                 color=lbl["color"], description=lbl["description"]
             )
-        return LabelMaker(client=self, labels=labels)
+        return LabelMaker(endpoint=endpoint, labels=labels)
 
 
 @dataclass
 class LabelMaker:
-    client: Client
+    endpoint: ghreq.Endpoint
     labels: dict[str, LabelDetails]
-
-    @property
-    def label_url(self) -> str:
-        return (
-            f"{GITHUB_API_URL}/repos/{self.client.repo.owner}"
-            f"/{self.client.repo.name}/labels"
-        )
 
     def ensure_label(
         self, name: str, details: LabelDetails, force: bool = False
@@ -101,9 +58,7 @@ class LabelMaker:
                 "color": details.color,
                 "description": details.description,
             }
-            r = self.client.session.post(self.label_url, json=payload)
-            r.raise_for_status()
-            data = r.json()
+            data = self.endpoint.post(payload)
             self.labels[name] = LabelDetails(
                 color=data["color"], description=data["description"]
             )
@@ -117,9 +72,7 @@ class LabelMaker:
                     extant.description = details.description
             if payload:
                 log.info("Updating %s for label %r", ", ".join(payload.keys()), name)
-                self.client.session.patch(
-                    f"{self.label_url}/{name}", json=payload
-                ).raise_for_status()
+                (self.endpoint / quote(name)).patch(payload)
             elif details.predefined:
                 log.info("Label %r already exists; not modifying", name)
             else:
