@@ -39,7 +39,7 @@ dependencies = [
     "ghrepo ~= 0.7",
     "ghreq >= 0.1.1, < 1.0",
     "ghtoken ~= 0.1",
-    "pydantic ~= 2.0",
+    "pydantic ~= 2.13",
     "ruamel.yaml >=0.15, <1",
 ]
 
